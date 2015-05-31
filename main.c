@@ -33,5 +33,6 @@ int main(int argc, char *argv[])
     // We will always output 24bit PNG for now, regardless of output extension
     stbi_write_png(argv[2], width, height, 3, pixels, 0);
 
+    stbi_image_free(pixels);
     return 0;
 }
