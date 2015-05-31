@@ -34,6 +34,7 @@
 # IDE files
 *.cbp
 *.depend
+*.xml
 
 # Image files
 *.jpg
