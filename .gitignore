@@ -33,3 +33,13 @@
 
 # IDE files
 *.cbp
+*.depend
+
+# Image files
+*.jpg
+*.jpeg
+*.png
+*.bmp
+*.gif
+*.ppm
+*.pgm
