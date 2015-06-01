@@ -3,7 +3,7 @@
 
 typedef struct
 {
-    char *pixels;
+    unsigned char *pixels;
     int width;
     int height;
     int dpi;

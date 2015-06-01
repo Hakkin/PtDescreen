@@ -6,6 +6,7 @@
 #include "stb_image.h"
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
+#include "descreen.h"
 
 int main(int argc, char *argv[])
 {
@@ -25,6 +26,20 @@ int main(int argc, char *argv[])
     if (pixels == NULL)
     {
         printf("\nError reading image %s: %s", argv[1], stbi_failure_reason());
+        return 1;
+    }
+
+    descreenConfig config = {0};
+    config.pixels = pixels;
+    config.width  = width;
+    config.height = height;
+    config.dpi    = atoi(argv[3]);
+
+    // Hard-coded values for now, using a 1200x1200 image for testing, analyzed size will be 512x512 (2^9)
+    if (analyze(&config, 344, 344, 9) == 0)
+    {
+        printf("\nCould not detect screentone in input image.");
+        return 1;
     }
 
     // Descreen image
