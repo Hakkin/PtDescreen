@@ -10,7 +10,7 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
     int analyzeSize = pow(2, pow2);
 
     // FFTW requires padding in order to perform in-place transforms of real data
-    // http://www.fftw.org/doc/Real_002ddata-DFT-Array-Format.html
+    // http://www.fftw.org/doc/Multi_002dDimensional-DFTs-of-Real-Data.html
     int padding = (analyzeSize&1) ? 1 : 2;
     double *in  = fftw_alloc_real((analyzeSize+padding)*analyzeSize);
     fftw_plan plan = fftw_plan_dft_r2c_2d(analyzeSize, analyzeSize, in, (fftw_complex *)in, FFTW_ESTIMATE);
