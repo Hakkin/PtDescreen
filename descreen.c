@@ -94,7 +94,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
                 }
                 break;
             case 1:
-                if (x == width-1)
+                if (x >= width-1)
                 {
                     break;
                 }
@@ -104,7 +104,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
                 }
                 break;
             case 2:
-                if (y == height-1)
+                if (y >= height-1)
                 {
                     break;
                 }
