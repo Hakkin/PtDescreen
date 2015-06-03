@@ -7,7 +7,7 @@
 
 int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int pow2)
 {
-    int analyzeSize = pow(2, pow2);
+    unsigned int analyzeSize = pow(2, pow2);
 
     // FFTW requires padding in order to perform in-place transforms of real data
     // http://www.fftw.org/doc/Multi_002dDimensional-DFTs-of-Real-Data.html
@@ -24,9 +24,9 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
     {
         // Initializing input array
         // Any out-of-bound pixels will be initialized as 0 (black)
-        for (int row = 0; row < analyzeSize; row++)
+        for (unsigned int row = 0; row < analyzeSize; row++)
         {
-            for (int column = 0; column < analyzeSize; column++)
+            for (unsigned int column = 0; column < analyzeSize; column++)
             {
                 int rowOffset = row+y;
                 int columnOffset = column+x;
@@ -43,6 +43,7 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
             }
         }
         fftw_execute(plan);
+
 
     }
 
