@@ -12,8 +12,12 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
     // FFTW requires padding in order to perform in-place transforms of real data
     // http://www.fftw.org/doc/Multi_002dDimensional-DFTs-of-Real-Data.html
     int padding = (analyzeSize&1) ? 1 : 2;
-    double *in  = fftw_alloc_real((analyzeSize+padding)*analyzeSize);
-    fftw_plan plan = fftw_plan_dft_r2c_2d(analyzeSize, analyzeSize, in, (fftw_complex *)in, FFTW_ESTIMATE);
+    double *dInput  = fftw_alloc_real((analyzeSize+padding)*analyzeSize);
+    // Casting double input to complex for output, this makes it easier to work with later
+    fftw_complex *cOutput = (fftw_complex *)dInput;
+    // This is an in-place transform, despite having difference input and output variables,
+    // since they are just different casts of the same address
+    fftw_plan plan = fftw_plan_dft_r2c_2d(analyzeSize, analyzeSize, dInput, cOutput, FFTW_ESTIMATE);
 
     // Processing loop
     for (int channel = 0; channel < 3; channel++)
@@ -35,11 +39,15 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
                 {
                     pixel = config->pixels[(rowOffset*config->width+columnOffset)*3+channel];
                 }
-                in[row*(analyzeSize+padding)+column] = pixel;
+                dInput[row*(analyzeSize+padding)+column] = pixel;
             }
         }
+        fftw_execute(plan);
 
     }
+
+    fftw_destroy_plan(plan);
+    fftw_free(dInput);
     return 1;
 }
 
