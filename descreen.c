@@ -9,13 +9,13 @@
 static double genMagnitude(double real, double imag);
 // Finds peaks in magnitude by comparing all 4 pixels around it, if the specified
 // pixel is a peak, it will return a non-zero value, otherwise it will return 0
-static int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y);
+static int isPeak(int width, int height, fftw_complex *fft, int x, int y);
 // Returns distance from (x1, y1) to (x2, y2)
-static double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2);
+static double distanceFrom(int x1, int y1, int x2, int y2);
 
-int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int pow2)
+int analyze(descreenConfig *config, int x, int y, int pow2)
 {
-    unsigned int analyzeSize = pow(2, pow2);
+    int analyzeSize = pow(2, pow2);
 
     // FFTW requires padding in order to perform in-place transforms of real data
     // http://www.fftw.org/doc/Multi_002dDimensional-DFTs-of-Real-Data.html
@@ -32,9 +32,9 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
     {
         // Initializing input array
         // Any out-of-bound pixels will be initialized as 0 (black)
-        for (unsigned int row = 0; row < analyzeSize; row++)
+        for (int row = 0; row < analyzeSize; row++)
         {
-            for (unsigned int column = 0; column < analyzeSize; column++)
+            for (int column = 0; column < analyzeSize; column++)
             {
                 int rowOffset = row+y;
                 int columnOffset = column+x;
@@ -52,20 +52,20 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
         }
         fftw_execute(plan);
 
-        unsigned int peakX = 0,
-                     peakY = 0;
+        int peakX = 0,
+            peakY = 0;
         double largestPeak = 0;
         double widthInches  = (double)analyzeSize/config->dpi,
                heightInches = (double)analyzeSize/config->dpi;
-        unsigned int locateWidth  = (analyzeSize+padding)/2,
-                     locateHeight = analyzeSize/2;
+        int locateWidth  = (analyzeSize+padding)/2,
+            locateHeight = analyzeSize/2;
         // row (y) is only looped for analyzeSize/2 because the bottom half of the FFT
         // is mostly symmetrical, all information needed to detect screentones should exist
         // in the top half. column (x) is looped for (analyzeSize+padding)/2 because FFTW's r2c
         // function discards unneeded symmetrical data, the right horizontal half, in this case
-        for (unsigned int row = 0; row < locateHeight; row++)
+        for (int row = 0; row < locateHeight; row++)
         {
-            for (unsigned int column = 0; column < locateWidth; column++)
+            for (int column = 0; column < locateWidth; column++)
             {
                 // This first checks if the point is within 15 pixels from the center, if it is then it discards it,
                 // this is to make sure we are not getting false positives from the DC component or low frequencies,
@@ -88,7 +88,7 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
     return 1;
 }
 
-int descreen(descreenConfig *config, unsigned int pow2)
+int descreen(descreenConfig *config, int pow2)
 {
     return 0;
 }
@@ -98,7 +98,7 @@ double genMagnitude(double real, double imag)
     return sqrt((real*real)+(imag*imag));
 }
 
-int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y)
+int isPeak(int width, int height, fftw_complex *fft, int x, int y)
 {
     double magValue = genMagnitude(fft[y*width+x][0], fft[y*width+x][1]);
 
@@ -106,7 +106,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
     // Checks each pixel around the specified one to check if it's brighter,
     // if it is, isPeak is set to 0 and we will break from the loop
     // TODO: There is probably a better way to do this, but this works for now
-    for (unsigned int side = 0; side < 4; side++)
+    for (int side = 0; side < 4; side++)
     {
         switch (side)
         {
@@ -163,7 +163,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
     return isPeak;
 }
 
-double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+double distanceFrom(int x1, int y1, int x2, int y2)
 {
     return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
