@@ -10,6 +10,11 @@ double genMagnitude(double real, double imag);
 // Finds peaks in magnitude by comparing all 4 pixels around it, if the specified
 // pixel is a peak, it will return a non-zero value, otherwise it will return 0
 int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y);
+// Returns distance from (x1, y1) to (x2, y2)
+double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+{
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+}
 
 int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int pow2)
 {
@@ -50,7 +55,35 @@ int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int
         }
         fftw_execute(plan);
 
-
+        unsigned int peakX = 0,
+                     peakY = 0;
+        double largestPeak = 0;
+        double widthInches  = (double)analyzeSize/config->dpi,
+               heightInches = (double)analyzeSize/config->dpi;
+        unsigned int locateWidth  = (analyzeSize+padding)/2,
+                     locateHeight = analyzeSize/2;
+        // row (y) is only looped for analyzeSize/2 because the bottom half of the FFT
+        // is mostly symmetrical, all information needed to detect screentones should exist
+        // in the top half. column (x) is looped for (analyzeSize+padding)/2 because FFTW's r2c
+        // function discards unneeded symmetrical data, the right horizontal half, in this case
+        for (unsigned int row = 0; row < locateHeight; row++)
+        {
+            for (unsigned int column = 0; column < locateWidth; column++)
+            {
+                // This first checks if the point is within 15 pixels from the center, if it is then it discards it,
+                // this is to make sure we are not getting false positives from the DC component or low frequencies,
+                // it then checks if it the pixel is a peak value, if it is, it checks if it is larger than the
+                // previous largest peak, if it is we will set it to the new largest peak
+                if (distanceFrom(0, 0, column, row) > 15 &&
+                    isPeak(locateWidth, locateHeight, cOutput, row, column) &&
+                    genMagnitude(cOutput[row*locateWidth+column][0], cOutput[row*locateWidth+column][1]) > largestPeak)
+                {
+                    largestPeak = genMagnitude(cOutput[row*locateWidth+column][0], cOutput[row*locateWidth+column][1]);
+                    peakX = column;
+                    peakY = row;
+                }
+            }
+        }
     }
 
     fftw_destroy_plan(plan);
