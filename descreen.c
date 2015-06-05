@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#ifndef M_PI
+    #define M_PI 3.14159265358979323846
+#endif
 
 #include <fftw3.h>
 #include "descreen.h"
@@ -12,6 +15,10 @@ static double genMagnitude(double real, double imag);
 static int isPeak(int width, int height, fftw_complex *fft, int x, int y);
 // Returns distance from (x1, y1) to (x2, y2)
 static double distanceFrom(int x1, int y1, int x2, int y2);
+// Calculates LPI
+static int calcLPI(int width, int height, int dpi, int x, int y);
+// Calculates angle
+static int calcAngle(int x, int y);
 
 int analyze(descreenConfig *config, int x, int y, int pow2)
 {
@@ -55,8 +62,6 @@ int analyze(descreenConfig *config, int x, int y, int pow2)
         int peakX = 0,
             peakY = 0;
         double largestPeak = 0;
-        double widthInches  = (double)analyzeSize/config->dpi,
-               heightInches = (double)analyzeSize/config->dpi;
         int locateWidth  = (analyzeSize+padding)/2,
             locateHeight = analyzeSize/2;
         // row (y) is only looped for analyzeSize/2 because the bottom half of the FFT
@@ -166,4 +171,16 @@ int isPeak(int width, int height, fftw_complex *fft, int x, int y)
 double distanceFrom(int x1, int y1, int x2, int y2)
 {
     return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+}
+
+int calcLPI(int width, int height, int dpi, int x, int y)
+{
+    double widthInches  = (double)width/dpi,
+           heightInches = (double)height/dpi;
+    return round(distanceFrom(0, 0, round((double)x/widthInches), round((double)y/heightInches)));
+}
+
+int calcAngle(int x, int y)
+{
+    return round(fmod((atan2(x, y) * 180/M_PI), 30));
 }
