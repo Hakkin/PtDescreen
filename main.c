@@ -41,6 +41,7 @@ int main(int argc, char *argv[])
         printf("\nCould not detect screentone in input image.");
         return 1;
     }
+    printf("\nDetected screentone with parameters %iLPI and %ideg", config.lpi, config.angle);
 
     // Descreen image
 

@@ -22,6 +22,9 @@ static int calcAngle(int x, int y);
 
 int analyze(descreenConfig *config, int x, int y, int pow2)
 {
+    // TODO: This detects screentone frequencies and angle decently, but it also
+    // has false positives on non-screentoned images. This can probably be fixed by
+    // verifying that other peaks corresponding to screentone frequencies exist in the image.
     int analyzeSize = pow(2, pow2);
 
     // FFTW requires padding in order to perform in-place transforms of real data
@@ -34,6 +37,9 @@ int analyze(descreenConfig *config, int x, int y, int pow2)
     // since they are just different casts of the same address
     fftw_plan plan = fftw_plan_dft_r2c_2d(analyzeSize, analyzeSize, dInput, cOutput, FFTW_ESTIMATE);
 
+    int channelPeaksX[3] = {0},
+        channelPeaksY[3] = {0};
+    int channelLPI[3] = {0};
     // Processing loop
     for (int channel = 0; channel < 3; channel++)
     {
@@ -86,11 +92,30 @@ int analyze(descreenConfig *config, int x, int y, int pow2)
                 }
             }
         }
+        channelPeaksX[channel] = peakX;
+        channelPeaksY[channel] = peakY;
+        channelLPI[channel] = calcLPI(analyzeSize, analyzeSize, config->dpi, peakX, peakY);
+    }
+    int peakFound = 0;
+    // Checking if the detected peaks in each channel match, if 2 or more match, we will set lpi and angle in *config
+    // to the detected values
+    // TODO: This could probably be cleaned up
+    if (channelLPI[0] == channelLPI[1] ||
+        channelLPI[0] == channelLPI[2])
+    {
+        peakFound = 1;
+        config->lpi = channelLPI[0];
+        config->angle = calcAngle(channelPeaksX[0], channelPeaksY[0]);
+    } else if (channelLPI[1] == channelLPI[2])
+    {
+        peakFound = 1;
+        config->lpi = channelLPI[1];
+        config->angle = calcAngle(channelPeaksX[1], channelPeaksY[1]);
     }
 
     fftw_destroy_plan(plan);
     fftw_free(dInput);
-    return 1;
+    return peakFound;
 }
 
 int descreen(descreenConfig *config, int pow2)
