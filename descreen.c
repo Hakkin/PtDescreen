@@ -82,7 +82,7 @@ int analyze(descreenConfig *config, int x, int y, int pow2)
                 // this is to make sure we are not getting false positives from the DC component or low frequencies,
                 // it then checks if it the pixel is a peak value, if it is, it checks if it is larger than the
                 // previous largest peak, if it is we will set it to the new largest peak
-                if (distanceFrom(0, 0, column, row) > 15 &&
+                if (distanceFrom(0, 0, column, row) >  analyzeSize/8 &&
                     isPeak(locateWidth, locateHeight, cOutput, row, column) &&
                     genMagnitude(cOutput[row*locateWidth+column][0], cOutput[row*locateWidth+column][1]) > largestPeak)
                 {
