@@ -6,7 +6,7 @@
 #include "descreen.h"
 
 // Generates magnitude value from a real and imaginary value scaled by the scale value
-double genMagnitude(double real, double imag, double scale);
+double genMagnitude(double real, double imag);
 // Finds peaks in magnitude by comparing all 4 pixels around it, if the specified
 // pixel is a peak, it will return a non-zero value, otherwise it will return 0
 int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y);
@@ -63,17 +63,14 @@ int descreen(descreenConfig *config, unsigned int pow2)
     return 0;
 }
 
-double genMagnitude(double real, double imag, double scale)
+double genMagnitude(double real, double imag)
 {
-    real = real/scale;
-    imag = imag/scale;
     return sqrt((real*real)+(imag*imag));
 }
 
 int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y)
 {
-    double scale = width*height;
-    double magValue = genMagnitude(fft[y*width+x][0], fft[y*width+x][1], scale);
+    double magValue = genMagnitude(fft[y*width+x][0], fft[y*width+x][1]);
 
     int isPeak = 1;
     // Checks each pixel around the specified one to check if it's brighter,
@@ -88,7 +85,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
                 {
                     break;
                 }
-                if (magValue <= genMagnitude(fft[(y-1)*width+x][0], fft[(y-1)*width+x][1], scale))
+                if (magValue <= genMagnitude(fft[(y-1)*width+x][0], fft[(y-1)*width+x][1]))
                 {
                     isPeak = 0;
                 }
@@ -98,7 +95,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
                 {
                     break;
                 }
-                if (magValue <= genMagnitude(fft[y*width+(x+1)][0], fft[y*width+(x+1)][1], scale))
+                if (magValue <= genMagnitude(fft[y*width+(x+1)][0], fft[y*width+(x+1)][1]))
                 {
                     isPeak = 0;
                 }
@@ -108,7 +105,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
                 {
                     break;
                 }
-                if (magValue <= genMagnitude(fft[(y+1)*width+x][0], fft[(y+1)*width+x][1], scale))
+                if (magValue <= genMagnitude(fft[(y+1)*width+x][0], fft[(y+1)*width+x][1]))
                 {
                     isPeak = 0;
                 }
@@ -118,7 +115,7 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
                 {
                     break;
                 }
-                if (magValue <= genMagnitude(fft[y*width+(x-1)][0], fft[y*width+(x-1)][1], scale))
+                if (magValue <= genMagnitude(fft[y*width+(x-1)][0], fft[y*width+(x-1)][1]))
                 {
                     isPeak = 0;
                 }
