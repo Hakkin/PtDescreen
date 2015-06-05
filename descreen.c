@@ -6,12 +6,12 @@
 #include "descreen.h"
 
 // Generates magnitude value from a real and imaginary value
-double genMagnitude(double real, double imag);
+static double genMagnitude(double real, double imag);
 // Finds peaks in magnitude by comparing all 4 pixels around it, if the specified
 // pixel is a peak, it will return a non-zero value, otherwise it will return 0
-int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y);
+static int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y);
 // Returns distance from (x1, y1) to (x2, y2)
-double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2);
+static double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2);
 
 int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int pow2)
 {
