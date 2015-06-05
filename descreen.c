@@ -11,10 +11,7 @@ double genMagnitude(double real, double imag);
 // pixel is a peak, it will return a non-zero value, otherwise it will return 0
 int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned int x, unsigned int y);
 // Returns distance from (x1, y1) to (x2, y2)
-double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
-{
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
-}
+double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2);
 
 int analyze(descreenConfig *config, unsigned int x, unsigned int y, unsigned int pow2)
 {
@@ -164,4 +161,9 @@ int isPeak(unsigned int width, unsigned int height, fftw_complex *fft, unsigned 
     }
 
     return isPeak;
+}
+
+double distanceFrom(unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+{
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
