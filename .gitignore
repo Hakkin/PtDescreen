@@ -35,6 +35,7 @@
 *.cbp
 *.depend
 *.xml
+*.layout
 
 # Image files
 *.jpg
