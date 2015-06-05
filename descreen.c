@@ -5,7 +5,7 @@
 #include <fftw3.h>
 #include "descreen.h"
 
-// Generates magnitude value from a real and imaginary value scaled by the scale value
+// Generates magnitude value from a real and imaginary value
 double genMagnitude(double real, double imag);
 // Finds peaks in magnitude by comparing all 4 pixels around it, if the specified
 // pixel is a peak, it will return a non-zero value, otherwise it will return 0
